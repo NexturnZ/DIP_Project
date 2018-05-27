@@ -47,8 +47,8 @@ while max(Un)~=0                            % while Un is not null
         X_tilde = X(Uc==1);                 % obtain pixels in Uc
     	Y_tilde = Y(Uc==1);
         for i1 = 1:length(X_tilde)
-           Uc_tilde((X-X_tilde(i1)).^2+(Y-Y_tilde(i1)).^2<r1^2 && Un==1) = 1;
-           Un((X-X_tilde(i1)).^2+(X-X_tilde(i1)).^2<r1^2 && Un==1) = 0;
+           Uc_tilde((X-X_tilde(i1)).^2+(Y-Y_tilde(i1)).^2<=r1^2 & Un==1) = 1;
+           Un((X-X_tilde(i1)).^2+(X-X_tilde(i1)).^2<=r1^2 & Un==1) = 0;
         end
     end
     
