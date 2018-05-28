@@ -140,8 +140,10 @@ while max(Un)~=0                            % while Un is not null
             wB = weight([X_mrf(i1),Y_mrf(i1)],backSample(1,:),backSample(2,:),uncert);
         end
         
-        %% Calculate likelihood
-        Lk = 1/N^2;
+        %% Compute data cost
+        Lk = repmat(wF,N,1).*repmat(wB.',1,N);
+        Lk = 1/N^2*sum(Lk(:))*exp;                  % calculate likelihood
+        
         
         
     end
