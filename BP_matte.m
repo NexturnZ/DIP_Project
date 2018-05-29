@@ -83,6 +83,7 @@ while max(Un)~=0                            % while Un is not null
     
     N = 12;                                 % number of samples
     
+    Vd = zeros(1,length(X_mrf));
     for i1 = 1:length(X_mrf)        
         %% sample foreground & background and calculate weight
         foreSample = zeros(2,N);            % foreground sample set coordinates
@@ -143,28 +144,42 @@ while max(Un)~=0                            % while Un is not null
             wB = weight([X_mrf(i1),Y_mrf(i1)],backSample(1,:),backSample(2,:),uncert);
         end
         
-        %% Compute data cost
+       %% Compute likelihood
+        Lk = zeros(1,25);
+        
         idx = 1:N;
         [IdxF,IdxB] = meshgrid(idx, idx);
         
-        Cp = squeeze(Image(X_mrf(i1),Y_mrf(i1),:));   % obtain node's RGB value
-        Cp = repmat(Cp,1,N);
+        Cp = Image(X_mrf(i1),Y_mrf(i1),:);   % obtain node's RGB value
+        Cp = repmat(Cp,N,N);
         
-        FP = squeeze(Image(foreSample(1,:),foreSample(2,:))); % obtain foreground samples' RGB value
-        FP = FP.';
+        Fp = Image(foreSample(1,:),foreSample(2,:)); % obtain foreground samples' RGB value
+        Fp_rep = repmat(Fp,N,1);
         
-        Bp = squeeze(Image(backSample(1,:),backSample(2,:))); % obtain background samples' RGB value
-        Bp = Bp.';
+        Bp = Image(backSample(1,:),backSample(2,:)); % obtain background samples' RGB value
+        Bp_rep = repmat(Bp.',1,N);
+        
+        dF = squeeze(sum(Fp.^2,3));                  % variance of foreground sample set
+        sigmaF = cov(dF);
+        dB = squeeze(sum(Bp.^2,3));                  % variance of background sample set
+        sigmaB = cov(dB);
         
         for i2 = alphaK
+            sigma = i2*sigmaF+(1-i2)*sigmaB;
+            dc = sum((Cp-(i2*Fp_rep+(1-i2)*Bp_rep)).^2,3);
             
-            dc = Cp-(i2*Fp+(1-i2)*Bp)
-            Lk = wF(IdxF).*wB(IdxB);
-            Lk = 1/N^2*sum(Lk(:))*exp;                  % calculate likelihood
+            Lk = wF(IdxF).*wB(IdxB).*exp(-dc/(2*sigma^2));
+            Lk = 1/N^2*sum(Lk(:));                  % calculate likelihood
         end
         
+        %% Compute data cost
+        Vd(i1) = 1-Lk/sum(Lk);                          % obtain data cost
+        
+        Vs = 1-exp(-(repmat(alphaK,N,1)-repmat(alphaK.',1,N)).^2/0.2^2);    % sigmaS = 0.2
         
     end
+    
+    
     
 end
 
