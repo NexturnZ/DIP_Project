@@ -83,7 +83,7 @@ while max(Un)~=0                            % while Un is not null
     
     N = 12;                                 % number of samples
     
-    Vd = zeros(1,length(X_mrf));
+    Vd = zeros([s,25]);                     % initialize data cost
     for i1 = 1:length(X_mrf)        
         %% sample foreground & background and calculate weight
         foreSample = zeros(2,N);            % foreground sample set coordinates
@@ -107,7 +107,7 @@ while max(Un)~=0                            % while Un is not null
             mu = gmm_fore.mu;
             sigma = gmm_fore.Sigma;
             for i2 = 1:N
-                component = round(K*rand()); % random select a single Gaussian
+                component = k_fore; % random select a single Gaussian
                 muK = mu(component,:);
                 sigmaK = sigma(component,:); % obtain parameter fo Gaussian
                 r = mnvrnd(muK,sigmaK,1);
@@ -134,7 +134,7 @@ while max(Un)~=0                            % while Un is not null
             mu = gmm_back.mu;
             sigma = gmm_back.Sigma;
             for i2 = 1:N
-                component = round(K*rand()); % random select a single Gaussian
+                component = k_back(i2); % random select a single Gaussian
                 muK = mu(component,:);
                 sigmaK = sigma(component,:); % obtain parameter fo Gaussian
                 r = mnvrnd(muK,sigmaK,1);
@@ -173,13 +173,14 @@ while max(Un)~=0                            % while Un is not null
         end
         
         %% Compute data cost
-        Vd(i1) = 1-Lk/sum(Lk);                          % obtain data cost
+        Vd(X_mrf(i1),Y_mrf(i1),:) = 1-Lk/sum(Lk);                          % obtain data cost
         
-        Vs = 1-exp(-(repmat(alphaK,N,1)-repmat(alphaK.',1,N)).^2/0.2^2);    % sigmaS = 0.2
+        
         
     end
+    Vs = 1-exp(-(repmat(alphaK,N,1)-repmat(alphaK.',1,N)).^2/0.2^2);    % sigmaS = 0.2
     
-    
+    %% apply Belief Propagation algorithm
     
 end
 
