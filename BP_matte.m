@@ -1,13 +1,13 @@
 %-------------------------------------------------------------------------%
 % Input:
-% Image:      input image             --> M-by-N matrix;
-% foreground: user defined foreground --> 2-by-n matrix,
+% Image: input RBG image              --> MxNx3 matrix;
+% foreground: user defined foreground --> 2xn matrix,
 %   where the first row is X coordinate, the seconde row is Y coordinate;
-% background: user defined background --> 2-by-m matrix,
+% background: user defined background --> 2xm matrix,
 %   where the first row is X coordinate, the seconde row is Y coordinate;
 %                     
 % Output:
-% MattedImage: Processd image         --> M-by-N matrix;
+% MattedImage: Processd image         --> MxN matrix;
 %-------------------------------------------------------------------------%
 function MattedImage = BP_matte(Image, foreground, background)
 %% initially define Uc & Un based on user-defined foreground & background
@@ -16,6 +16,8 @@ y = 1:s(1);
 x = 1:s(2);
 [X,Y] = meshgrid(x,y);
 X = X.';    Y = Y.';
+
+alphaK = linspace(0,1,25);                  % discrete alpha into 25 levels
 
 alpha = 0.5*ones(s);                        % initialize alpha value, which is in the region [0,1];
 uncert = ones(s);
@@ -81,10 +83,11 @@ while max(Un)~=0                            % while Un is not null
     
     N = 12;                                 % number of samples
     
-    for i1 = 1:length(X_mrf)
-        foreSample = zeros(2,N);            % foreground sample set
-        backSample = zeros(2,N);            % background sample set
+    for i1 = 1:length(X_mrf)        
         %% sample foreground & background and calculate weight
+        foreSample = zeros(2,N);            % foreground sample set coordinates
+        backSample = zeros(2,N);            % background sample set coordinates
+        
         
         % foreground
         foreSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==1);
@@ -141,9 +144,24 @@ while max(Un)~=0                            % while Un is not null
         end
         
         %% Compute data cost
-        Lk = repmat(wF,N,1).*repmat(wB.',1,N);
-        Lk = 1/N^2*sum(Lk(:))*exp;                  % calculate likelihood
+        idx = 1:N;
+        [IdxF,IdxB] = meshgrid(idx, idx);
         
+        Cp = squeeze(Image(X_mrf(i1),Y_mrf(i1),:));   % obtain node's RGB value
+        Cp = repmat(Cp,1,N);
+        
+        FP = squeeze(Image(foreSample(1,:),foreSample(2,:))); % obtain foreground samples' RGB value
+        FP = FP.';
+        
+        Bp = squeeze(Image(backSample(1,:),backSample(2,:))); % obtain background samples' RGB value
+        Bp = Bp.';
+        
+        for i2 = alphaK
+            
+            dc = Cp-(i2*Fp+(1-i2)*Bp)
+            Lk = wF(IdxF).*wB(IdxB);
+            Lk = 1/N^2*sum(Lk(:))*exp;                  % calculate likelihood
+        end
         
         
     end
