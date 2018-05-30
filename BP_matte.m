@@ -26,6 +26,8 @@ uncert(background(1,:),background(2,:)) = 0;% initialize uncertainty;
 
 Uc = 1-uncert;                              % initialize group Uc, which include all known pixels
 Un = uncert;                                % initialize group Un, which include all unknown pixels
+U = sum(uncert(:));
+U_new = 0;
 Uc_tilde = zeros(s);                        % initialize group Uc~
 
 alpha(Uc==1) = 1;                           % set value of user-defined foreground to be 1
@@ -44,7 +46,8 @@ r2 = 20;                                    % radius of region considered when c
 
 %%
 % the loop judge condition needs to be further determined.
-while max(Un)~=0                            % while Un is not null
+while max(Un)~=0 && U>U_new % while Un is not null
+    U = sum(uncert(:));                              % update the total uncertainty.
     %% if Un is not null, transfer pixelswithin 15 pixels of Uc from Un to Uc_tilde
     if max(Un)~=0
         X_tilde = X(Uc==1);                 % obtain pixels in Uc
@@ -184,9 +187,37 @@ while max(Un)~=0                            % while Un is not null
     alphaK = BP(MRF, Vd, Vs,alpha);
     
     %% update uncertianty, foreground & background
+    uncert((alpha==1 |alpha==0)& Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
+    Uc_tilde(alpha==1 |alpha==0) = 0;
     
+    foreground_new(1,:) = X(alpha==1).';
+    foreground_new(2,:) = Y(alpha==1).';
+    background_new(1,:) = X(alpha==0).';
+    background_new(2,:) = Y(alpha==0).';
     
+    for i1 = 1:s(1)
+       for i2 = 1:s(2)
+           if(Uc_tilde==1)
+              F_opt = Image(i1,i2)*alpha(i1,i2);
+              B_opt = Image(i1,i2)*(1-alpha(i1,i2));
+              
+              foreValue = squeeze(Image(foreground_new(1,:),foreground_new(2,:)));  % obtain RGB value of foreground
+              [~,minF] = min(sum((F_opt-foreValue).^3,3));                       % obtain the index of the smallest fitting error sample
+              
+              backValue = squeeze(Image(background_new(1,:),background_new(2,:)));  % obtain RGB value of backround
+              [~,minB] = min(sum((B_opt-backValue).^3,3));                       % obtain the index of the smallest fitting error sample
+              
+              wF_star = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert);
+              wB_star = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert);
+              uncert(i1,i2)= 1-sqrt(wF_star, wB_star);
+           end
+       end
+    end
+    
+    Uc_tilde =zeros(s); Uc_tilde(uncert~=0 & uncert~=1)=1;              % re-define Uc_tilde
+    Un = zeros(s);  Un(uncert==1)=1;
+    U_new = sum(uncert(:));                                              % compute total uncertainty
 end
 
-
+MattedImage = alpha*255;
 end
