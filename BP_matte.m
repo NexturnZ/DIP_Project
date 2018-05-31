@@ -21,8 +21,13 @@ alphaK = linspace(0,1,25);                  % discrete alpha into 25 levels
 
 alpha = 0.5*ones(s);                        % initialize alpha value, which is in the region [0,1];
 uncert = ones(s);
-uncert(foreground(1,:),foreground(2,:)) = 0;
-uncert(background(1,:),background(2,:)) = 0;% initialize uncertainty;
+for i1 = 1:length(foreground)
+    uncert(foreground(1,i1),foreground(2,i1)) = 0;
+end
+
+for i1 = 1:length(background)
+    uncert(background(1,i1),background(2,1i)) = 0;% initialize uncertainty;
+end
 
 Uc = 1-uncert;                              % initialize group Uc, which include all known pixels
 Un = uncert;                                % initialize group Un, which include all unknown pixels
