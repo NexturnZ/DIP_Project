@@ -1,4 +1,4 @@
-function alphaK_new = BP(MRF, Vd, Vs,alpha)
+function alphaK_new = BP(MRF, Vd, Vs,alpha, node)
 iteration = 20;         % iteration times
 counter = 0;            % counter for iteration
 s = size(MRF);          % obtain the size of image
@@ -10,19 +10,19 @@ while(counter<=iteration)
            
           % compute &pass message for 4 neighbor respectively
           if MRF(i1,i2)==1 && MRF(i1-1,i2)==1           
-              m = mesCompute(m, Vd, Vs, node, 1);
+              m = mesCompute(m, Vd, Vs, [i1,i2], 1);
           end
           
           if MRF(i1,i2)==1 && MRF(i1,i2+1)==1
-              m = mesCompute(m, Vd, Vs, node, 2);
+              m = mesCompute(m, Vd, Vs, [i1,i2], 2);
           end
           
           if MRF(i1,i2)==1 && MRF(i1+1,i2)==1
-              m = mesCompute(m, Vd, Vs, node, 3);
+              m = mesCompute(m, Vd, Vs, [i1,i2], 3);
           end
           
           if MRF(i1,i2)==1 && MRF(i1,i2-1)==1
-              m = mesCompute(m, Vd, Vs, node, 4);
+              m = mesCompute(m, Vd, Vs, [i1,i2], 4);
           end
           
        end
