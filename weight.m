@@ -8,10 +8,14 @@
 % Output:
 % w: weight of each samples     --> 1xN vector
 %-------------------------------------------------------------------------%
-function w = weight(node, sampleX, sampleY,uncert)
+function w = weight(node, sampleX, sampleY,uncert, r2)
 
-uFSample = uncert(sampleX, sampleY);    % uncertainty of samples
+uFSample = zeros(1,length(sampleX));
+for i1 = 1:length(sampleX)
+    uFSample(i1) = uncert(sampleX(i1), sampleY(i1));    % uncertainty of samples
+end
+
 sFsample = (sampleX-node(1)).^2+(sampleY-node(2)).^2; % spatial distance between samples and node
-w = (1-uFSample)*exp(-sFsample/(r2/2).^2);
+w = (1-uFSample).*exp(-sFsample/(r2/2).^2);
 
 end

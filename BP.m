@@ -32,7 +32,7 @@ end
 % compute belief vector, b should be a 3D matrix
 b = Vd.*squeeze(sum(m,3));  
 % compute alpha level, alphaK_level should be a 2D matrix
-[~,alphaK_level] = squeeze(max(b,[],3));
+[~,alphaK_level] = max(b,[],3);
 % compute new alpha matrix
 alphaK_new = alpha(alphaK_level);
 end
