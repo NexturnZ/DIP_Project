@@ -204,10 +204,10 @@ while max(Un)~=0 & U>U_new % while Un is not null
     Vs = 1-exp(-(repmat(alphaK,level,1)-repmat(alphaK.',1,level)).^2/0.2^2);    % sigmaS = 0.2
     
     %% apply Belief Propagation algorithm
-    alphaK = BP(MRF, Vd, Vs,alpha,level);
+    alpha = BP(MRF, Vd, Vs,alpha,level);
     
     %% update uncertianty, foreground & background
-    uncert((alpha==1 |alpha==0)& Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
+    uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
     Uc_tilde(alpha==1 |alpha==0) = 0;
     
     
@@ -216,24 +216,29 @@ while max(Un)~=0 & U>U_new % while Un is not null
     background_new(1,:) = X(alpha==0).';
     background_new(2,:) = Y(alpha==0).';
     
+    F_opt = Image.*alpha;
+    B_opt = Image-F_opt;
+    
+    foreValue = squeeze(Image(foreground_new(1,:),foreground_new(2,:)));  % obtain RGB value of foreground
+    backValue = squeeze(Image(background_new(1,:),background_new(2,:)));  % obtain RGB value of backround
+    
+    wF_star = zeros(s);
+    wB_star = zeros(s);
+    
     for i1 = 1:s(1)
        for i2 = 1:s(2)
            if(Uc_tilde==1)
-              F_opt = Image(i1,i2)*alpha(i1,i2);
-              B_opt = Image(i1,i2)*(1-alpha(i1,i2));
               
-              foreValue = squeeze(Image(foreground_new(1,:),foreground_new(2,:)));  % obtain RGB value of foreground
-              [~,minF] = min(sum((F_opt-foreValue).^3,3));                       % obtain the index of the smallest fitting error sample
+              [~,minF] = min(sum((F_opt(i1,i2)-foreValue).^2,3));                       % obtain the index of the smallest fitting error sample
+              [~,minB] = min(sum((B_opt(i1,i2)-backValue).^2,3));                       % obtain the index of the smallest fitting error sample
               
-              backValue = squeeze(Image(background_new(1,:),background_new(2,:)));  % obtain RGB value of backround
-              [~,minB] = min(sum((B_opt-backValue).^3,3));                       % obtain the index of the smallest fitting error sample
-              
-              wF_star = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert, r2);
-              wB_star = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert, r2);
-              uncert(i1,i2)= 1-sqrt(wF_star, wB_star);
+              wF_star(i1,i2) = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert, r2);
+              wB_star(i1,i2) = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert, r2);
            end
        end
     end
+    
+    uncert= 1-sqrt(wF_star.*wB_star);
     
     foreground = foreground_new;
     background = background_new;
