@@ -47,7 +47,7 @@ end
 counter = 1;
 
 %% build GMM based on user-defined foreground & background and assign pixels to single Gaussain
-K = 5;                                      % the number of component is 5 as infered in paper "GrabCut"
+K = 1;                                      % the number of component is 5 as infered in paper "GrabCut"
 options = statset('MaxIter',500);
 gmm_fore = fitgmdist(foreground.', K,'Options',options);        % build Gaussian mix model for foreground
 gmm_back = fitgmdist(background.', K,'Options',options);        % build Gaussian mix model for background
@@ -183,16 +183,16 @@ while max(Un)~=0 & U>U_new % while Un is not null
         Bp_rep = repmat(Bp,1,N);
         
         dF = squeeze(sqrt(sum(Fp.^2,3)));                  % variance of foreground sample set
-        sigmaF = cov(dF);
+        sigmaF = mean((dF-mean(dF)).^2);
         dB = squeeze(sqrt(sum(Bp.^2,3)));                  % variance of background sample set
-        sigmaB = cov(dB);
+        sigmaB = mean((dB-mean(dB)).^2);
         
-        for i2 = alphaK
-            sigma = i2*sigmaF+(1-i2)*sigmaB;
-            dc = sum((Cp-(i2*Fp_rep+(1-i2)*Bp_rep)).^2,3);
+        for i2 = 1:level
+            sigma = alphaK(i2)*sigmaF+(1-alphaK(i2))*sigmaB;
+            dc = sum((Cp-(alphaK(i2)*Fp_rep+(1-alphaK(i2))*Bp_rep)).^2,3);
             
-            Lk = wF(IdxF).*wB(IdxB).*exp(-dc/(2*sigma^2));
-            Lk = 1/N^2*sum(Lk(:));                  % calculate likelihood
+            Lkp = wF(IdxF).*wB(IdxB).*exp(-dc/(2*sigma^2));
+            Lk(i2) = 1/N^2*sum(Lkp(:));                     % calculate likelihood
         end
         
         %% Compute data cost
@@ -247,7 +247,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
     Un = zeros(s);  Un(uncert==1)=1;
     U_new = sum(uncert(:));                                              % compute total uncertainty
     
-    fprintf('the %d iteration',counter);
+%     fprintf('the %d iteration',counter);
     counter = counter+1;
 end
 

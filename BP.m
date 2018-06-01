@@ -1,11 +1,12 @@
 function alphaK_new = BP(MRF, Vd, Vs,alpha, level)
-iteration = 20;         % iteration times
+iteration = 30;         % iteration times
 s = size(MRF);          % obtain the size of image
-m = ones([s,4,25]);     % initialize message
+m = zeros([s,4,25]);     % initialize message
+m_new = ones([s,4,25]);
+counter = 1;
 
-
-for i1 = 1:iteration
-    m_new = m;
+while m_new ~= m & counter < iteration
+    m = m_new;
     
     for i2 = 1:level
         Vs_rep = ones(1,1,level);
@@ -16,19 +17,22 @@ for i1 = 1:iteration
         m_up = max(Vd.*m_up.*Vs_rep,[],4);
         m_new(1:s(1)-1,:,1,i2) = m_up(2:s(1),:,i2);
 
-        m_right = prod(m(:,:,[1,3,4],:),3);
+        m_right = squeeze(prod(m(:,:,[1,3,4],:),3));
         m_right = max(Vd.*m_right.*Vs_rep,[],4);
-        m_new(:,1:s(2)-1,2,i2) = m_right(:,2:s(2),i2);
+        m_new(:,2:s(2),2,i2) = m_right(:,1:s(2)-1,i2);
 
-        m_down = prod(m(:,:,[1,2,4],:),3);
+        m_down = squeeze(prod(m(:,:,[1,2,4],:),3));
         m_down = max(Vd.*m_down.*Vs_rep,[],4);
         m_new(2:s(1),:,3,i2) = m_down(1:s(1)-1,:,i2);
 
-        m_left = prod(m(:,:,[1,2,3],:),3);
+        m_left = squeeze(prod(m(:,:,[1,2,3],:),3));
         m_left = max(Vd.*m_left.*Vs_rep,[],4);
         m_new(:,1:s(2)-1,4,i2) = m_left(:,2:s(2),i2);
 
     end
+    
+    counter = counter+1;
+    fprintf('The %d iteration\n',counter);
     
 %     for i1 = 2:s(1)-1
 %        for i2 = 2:s(2)-1
@@ -55,7 +59,7 @@ for i1 = 1:iteration
 end
 
 % compute belief vector, b should be a 3D matrix
-b = Vd.*squeeze(sum(m,3));  
+b = Vd.*squeeze(sum(m_new,3));  
 % compute alpha level, alphaK_level should be a 2D matrix
 [~,alphaK_level] = max(b,[],3);
 % compute new alpha matrix

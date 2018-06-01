@@ -3,7 +3,7 @@ dbstop if error;
 
 % obtain image
 I = double(imread('peppers.png'));
-figure;imshow(uint8(I));title('origin image');
+% figure;imshow(uint8(I));title('origin image');
 
 % define foreground
 [x,y] = meshgrid(142:150,133:433);
@@ -24,7 +24,7 @@ end
 for i1 = 1:length(background)
     Iplot(background(1,i1),background(2,i1),:)=[0,0,255];
 end
-figure;imshow(uint8(Iplot));title('fore & back ground');
+% figure;imshow(uint8(Iplot));title('fore & back ground');
 
 tic;
 mattedImage = BP_matte(I,foreground, background);
