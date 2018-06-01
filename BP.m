@@ -14,19 +14,19 @@ for i1 = 1:iteration
 
         m_up = squeeze(prod(m(:,:,[2,3,4],:),3));    % MxNx25 matrix
         m_up = max(Vd.*m_up.*Vs_rep,[],4);
-        m_new(1:s(1)-1,:,1,i2) = m_up(2:s(1),:,1,i2);
+        m_new(1:s(1)-1,:,1,i2) = m_up(2:s(1),:,i2);
 
         m_right = prod(m(:,:,[1,3,4],:),3);
         m_right = max(Vd.*m_right.*Vs_rep,[],4);
-        m_new(:,1:s(2)-1,2,i2) = m_right(:,2:s(2),2,i2);
+        m_new(:,1:s(2)-1,2,i2) = m_right(:,2:s(2),i2);
 
         m_down = prod(m(:,:,[1,2,4],:),3);
         m_down = max(Vd.*m_down.*Vs_rep,[],4);
-        m_new(2:s(1),:,3,i2) = m_down(1:s(1)-1,:,3,i2);
+        m_new(2:s(1),:,3,i2) = m_down(1:s(1)-1,:,i2);
 
         m_left = prod(m(:,:,[1,2,3],:),3);
         m_left = max(Vd.*m_left.*Vs_rep,[],4);
-        m_new(:,1:s(2)-1,4,i2) = m_left(:,2:s(2),4,i2);
+        m_new(:,1:s(2)-1,4,i2) = m_left(:,2:s(2),i2);
 
     end
     
