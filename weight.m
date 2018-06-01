@@ -16,6 +16,6 @@ for i1 = 1:length(sampleX)
 end
 
 sFsample = (sampleX-node(1)).^2+(sampleY-node(2)).^2; % spatial distance between samples and node
-w = (1-uFSample).*exp(-sFsample/(r2/2).^2);
+w = (1-uFSample).*exp(-sFsample.'/(r2/2).^2);
 
 end

@@ -182,9 +182,9 @@ while max(Un)~=0 & U>U_new % while Un is not null
         end
         Bp_rep = repmat(Bp,1,N);
         
-        dF = squeeze(sum(Fp.^2,3));                  % variance of foreground sample set
+        dF = squeeze(sqrt(sum(Fp.^2,3)));                  % variance of foreground sample set
         sigmaF = cov(dF);
-        dB = squeeze(sum(Bp.^2,3));                  % variance of background sample set
+        dB = squeeze(sqrt(sum(Bp.^2,3)));                  % variance of background sample set
         sigmaB = cov(dB);
         
         for i2 = alphaK
