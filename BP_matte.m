@@ -207,7 +207,8 @@ while max(Un)~=0 & U>U_new % while Un is not null
     Vs = 1-exp(-(repmat(alphaK,level,1)-repmat(alphaK.',1,level)).^2/0.2^2);    % sigmaS = 0.2
     
     %% apply Belief Propagation algorithm
-    alpha = BP(MRF, Vd, Vs,alpha,level);
+    alpha_new = BP(MRF, Vd, Vs,alphaK,level);
+    alpha(MRF==1)=alpha_new(MRF==1);
     
     %% update uncertianty, foreground & background
     uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
