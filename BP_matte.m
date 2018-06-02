@@ -196,9 +196,12 @@ while max(Un)~=0 & U>U_new % while Un is not null
         end
         
         %% Compute data cost
-        Vd(X_mrf(i1),Y_mrf(i1),:) = 1-Lk/sum(Lk);                          % obtain data cost
-        
-        
+        Lks = sum(Lk);
+        if Lks ~= 0
+            Vd(X_mrf(i1),Y_mrf(i1),:) = 1-Lk/sum(Lk);                          % obtain data cost
+        else
+            Vd(X_mrf(i1),Y_mrf(i1),:) = 1/level;
+        end
         
     end
     Vs = 1-exp(-(repmat(alphaK,level,1)-repmat(alphaK.',1,level)).^2/0.2^2);    % sigmaS = 0.2
