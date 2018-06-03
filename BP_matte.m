@@ -36,11 +36,15 @@ U = sum(uncert(:));
 U_new = 0;
 Uc_tilde = zeros(s);                        % initialize group Uc~
 
+estimated = zeros(s);
+
 for i1 = 1:length(foreground)
+    estimated(foreground(1,i1),foreground(2,i1)) = 1;                       % measure the pixel have been estimted or not
     alpha(foreground(1,i1),foreground(2,i1)) = 1;                           % set value of user-defined foreground to be 1
 end
 
 for i1 = 1:length(background)
+    estimated(background(1,i1),background(2,i1)) = 1;                       % measure the pixel have been estimted or not
     alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
 end
 
@@ -116,8 +120,10 @@ while max(Un)~=0 & U>U_new % while Un is not null
         
         
         % foreground
-        foreSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==1);
-        foreSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==1);
+        foreSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+            & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+        foreSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+            & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
         
         % check whether there are N samples
         if length(foreSampleX_temp)>=N
@@ -143,8 +149,10 @@ while max(Un)~=0 & U>U_new % while Un is not null
         end
         
         % background
-        backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==0);
-        backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==0);
+        backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+            & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+        backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+            & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
         
         % check whether there are N samples
         if length(backSampleX_temp)>=N
@@ -222,6 +230,8 @@ while max(Un)~=0 & U>U_new % while Un is not null
     uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
     Uc_tilde(alpha==1 |alpha==0) = 0;
     
+    foreground_new = zeros(2,length(X(alpha==1)));
+    background_new = zeros(2,length(X(alpha==0)));
     
     foreground_new(1,:) = X(alpha==1).';
     foreground_new(2,:) = Y(alpha==1).';
@@ -255,6 +265,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
     Un = zeros(s);  Un(uncert==1)=1;
     U_new = sum(uncert(:));                                              % compute total uncertainty
     
+    estimated(MRF==1)=1;                                                % record pixels which have been estimated
 %     fprintf('the %d iteration',counter);
     counter = counter+1;
 end
