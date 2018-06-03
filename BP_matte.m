@@ -81,25 +81,25 @@ while max(Un)~=0 & U>U_new % while Un is not null
     X_tilde = X(Uc_tilde==1);
     Y_tilde = Y(Uc_tilde==1);
     for i1 = 1:length(Y_tilde)                % adjacent pixels in Uc are also in MRF
-        if X_tilde>0
+        if X_tilde(i1)>1
             if  uncert(X_tilde(i1)-1,Y_tilde(i1))==0
                 MRF(X_tilde(i1)-1,Y_tilde(i1)) = 1;
             end
         end
         
-        if X_tilde<s(1)
+        if X_tilde(i1)<s(1)
             if uncert(X_tilde(i1)+1,Y_tilde(i1))==0
                 MRF(X_tilde(i1)+1,Y_tilde(i1)) = 1;
             end
         end
         
-        if X_tilde>0
+        if Y_tilde(i1)>1
             if uncert(X_tilde(i1),Y_tilde(i1)-1)==0
                 MRF(X_tilde(i1),Y_tilde(i1)-1) = 1;
             end
         end
         
-        if X_tilde<s(2)
+        if Y_tilde(i1)<s(2)
             if uncert(X_tilde(i1),Y_tilde(i1)+1)==0
                 MRF(X_tilde(i1),Y_tilde(i1)+1) = 1;
             end
@@ -145,7 +145,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
                 [~,idx] = min(sum((foreground-r.').^2));    % find the most closest foreground as sample
                 foreSample(:,i2) = foreground(:,idx);
             end
-            wF = weight([X_mrf(i1),Y_mrf(i1)],foreSample(1,:),foreSample(2,:),uncert, r2);
+            wF = weight([X_mrf(i1),Y_mrf(i1)],foreSample(1,:).',foreSample(2,:).',uncert, r2);
         end
         
         % background
@@ -174,7 +174,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
                 [~,idx] = min(sum((background-r.').^2)); % find the most closest background as sample
                 backSample(:,i2) = background(:,idx);
             end
-            wB = weight([X_mrf(i1),Y_mrf(i1)],backSample(1,:),backSample(2,:),uncert, r2);
+            wB = weight([X_mrf(i1),Y_mrf(i1)],backSample(1,:).',backSample(2,:).',uncert, r2);
         end
         
        %% Compute likelihood
