@@ -47,7 +47,7 @@ end
 counter = 1;
 
 %% build GMM based on user-defined foreground & background and assign pixels to single Gaussain
-K = 1;                                      % the number of component is 5 as infered in paper "GrabCut"
+K = 5;                                      % the number of component is 5 as infered in paper "GrabCut"
 options = statset('MaxIter',500);
 gmm_fore = fitgmdist(foreground.', K,'Options',options);        % build Gaussian mix model for foreground
 gmm_back = fitgmdist(background.', K,'Options',options);        % build Gaussian mix model for background
@@ -77,20 +77,28 @@ while max(Un)~=0 & U>U_new % while Un is not null
     X_tilde = X(Uc_tilde==1);
     Y_tilde = Y(Uc_tilde==1);
     for i1 = 1:length(Y_tilde)                % adjacent pixels in Uc are also in MRF
-        if X_tilde>0 & uncert(X_tilde(i1)-1,Y_tilde(i1))==0
-           MRF(X_tilde(i1)-1,Y_tilde(i1)) = 1;
+        if X_tilde>0
+            if  uncert(X_tilde(i1)-1,Y_tilde(i1))==0
+                MRF(X_tilde(i1)-1,Y_tilde(i1)) = 1;
+            end
         end
         
-        if X_tilde<s(1) & uncert(X_tilde(i1)+1,Y_tilde(i1))==0
-           MRF(X_tilde(i1)+1,Y_tilde(i1)) = 1;
+        if X_tilde<s(1)
+            if uncert(X_tilde(i1)+1,Y_tilde(i1))==0
+                MRF(X_tilde(i1)+1,Y_tilde(i1)) = 1;
+            end
         end
         
-        if X_tilde>0 & uncert(X_tilde(i1),Y_tilde(i1)-1)==0
-           MRF(X_tilde(i1),Y_tilde(i1)-1) = 1;
+        if X_tilde>0
+            if uncert(X_tilde(i1),Y_tilde(i1)-1)==0
+                MRF(X_tilde(i1),Y_tilde(i1)-1) = 1;
+            end
         end
         
-        if X_tilde<s(2) & uncert(X_tilde(i1),Y_tilde(i1)+1)==0
-           MRF(X_tilde(i1),Y_tilde(i1)+1) = 1;
+        if X_tilde<s(2)
+            if uncert(X_tilde(i1),Y_tilde(i1)+1)==0
+                MRF(X_tilde(i1),Y_tilde(i1)+1) = 1;
+            end
         end
     end
     
@@ -135,8 +143,8 @@ while max(Un)~=0 & U>U_new % while Un is not null
         end
         
         % background
-        backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==1);
-        backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==1);
+        backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==0);
+        backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 & alpha==0);
         
         % check whether there are N samples
         if length(backSampleX_temp)>=N
