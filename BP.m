@@ -8,6 +8,8 @@ counter = 1;
 x = 1:s(1); y = 1:s(2);
 [X,Y] = meshgrid(x,y);
 X = X.';    Y = Y.';
+X_mrf = X(MRF==0);
+Y_mrf = Y(MRF==0);
 
 while sum(m_new(:) == m(:))~=numel(m) & counter < iteration
     m = m_new;
@@ -35,8 +37,6 @@ while sum(m_new(:) == m(:))~=numel(m) & counter < iteration
 
     end
     
-    X_mrf = X(MRF==0);
-    Y_mrf = Y(MRF==0);
     for i1 = 1:length(X_mrf)
         m_new(X_mrf(i1),Y_mrf(i1),:,:)= ones(1,1,4,level);
     end
