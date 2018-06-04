@@ -241,15 +241,22 @@ while max(Un)~=0 & U>U_new % while Un is not null
     F_opt = Image.*alpha;
     B_opt = Image-F_opt;
     
-    foreValue = squeeze(Image(foreground_new(1,:),foreground_new(2,:)));  % obtain RGB value of foreground
-    backValue = squeeze(Image(background_new(1,:),background_new(2,:)));  % obtain RGB value of backround
+    foreValue = zeros(3,length(foreground_new));
+    for i1 = 1:length(foreground_new)
+        foreValue(:,i1) = squeeze(Image(foreground_new(1,i1),foreground_new(2,i1)));  % obtain RGB value of foreground
+    end
+    
+    backValue = zeros(3,length(background_new));
+    for i1 = 1:length(background_new)
+        backValue(:,i1) = squeeze(Image(background_new(1,i1),background_new(2,i1)));  % obtain RGB value of backround
+    end
     
     for i1 = 1:s(1)
        for i2 = 1:s(2)
            if(Uc_tilde==1 & (alpha ~= 1 & alpha ~= 0))
               
-              [~,minF] = min(sum((F_opt(i1,i2)-foreValue).^2,3));                       % obtain the index of the smallest fitting error sample
-              [~,minB] = min(sum((B_opt(i1,i2)-backValue).^2,3));                       % obtain the index of the smallest fitting error sample
+              [~,minF] = min(sum((squeeze(F_opt(i1,i2,:))-foreValue).^2,3));                       % obtain the index of the smallest fitting error sample
+              [~,minB] = min(sum((squeeze(B_opt(i1,i2,:))-backValue).^2,3));                       % obtain the index of the smallest fitting error sample
               
               wF_star = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert, r2);
               wB_star = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert, r2);
