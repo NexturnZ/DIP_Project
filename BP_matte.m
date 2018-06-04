@@ -112,7 +112,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
     
     N = 12;                                 % number of samples
     
-    Vd = zeros([s,level]);                     % initialize data cost
+    Vd = ones([s,level]);                     % initialize data cost
     for i1 = 1:length(X_mrf)        
         %% sample foreground & background and calculate weight
         foreSample = zeros(2,N);            % foreground sample set coordinates
@@ -243,12 +243,12 @@ while max(Un)~=0 & U>U_new % while Un is not null
     
     foreValue = zeros(3,length(foreground_new));
     for i1 = 1:length(foreground_new)
-        foreValue(:,i1) = squeeze(Image(foreground_new(1,i1),foreground_new(2,i1)));  % obtain RGB value of foreground
+        foreValue(:,i1) = squeeze(Image(foreground_new(1,i1),foreground_new(2,i1),:));  % obtain RGB value of foreground
     end
     
     backValue = zeros(3,length(background_new));
     for i1 = 1:length(background_new)
-        backValue(:,i1) = squeeze(Image(background_new(1,i1),background_new(2,i1)));  % obtain RGB value of backround
+        backValue(:,i1) = squeeze(Image(background_new(1,i1),background_new(2,i1),:));  % obtain RGB value of backround
     end
     
     for i1 = 1:s(1)
