@@ -64,7 +64,7 @@ r2 = 20;                                    % radius of region considered when c
 
 %%
 % the loop judge condition needs to be further determined.
-while max(Un)~=0 & U>U_new % while Un is not null
+while max(Un(:))~=0 & U>U_new % while Un is not null
     U = sum(uncert(:));                              % update the total uncertainty.
     %% if Un is not null, transfer pixelswithin 15 pixels of Uc from Un to Uc_tilde
     if max(Un)~=0
@@ -226,6 +226,14 @@ while max(Un)~=0 & U>U_new % while Un is not null
     alpha_new = BP(MRF, Vd, Vs,alphaK,level);
     alpha(MRF==1)=alpha_new(MRF==1);
     
+    for i1 = 1:length(foreground)
+        alpha(foreground(1,i1),foreground(2,i1)) = 1;                           % set value of user-defined foreground to be 1
+    end
+
+    for i1 = 1:length(background)
+        alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
+    end
+    
     %% update uncertianty, foreground & background
     uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
     Uc_tilde(alpha==1 |alpha==0) = 0;
@@ -272,13 +280,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
     estimated(MRF==1)=1;                                                % record pixels which have been estimated
 %     fprintf('the %d iteration',counter);
 
-for i1 = 1:length(foreground)
-    alpha(foreground(1,i1),foreground(2,i1)) = 1;                           % set value of user-defined foreground to be 1
-end
 
-for i1 = 1:length(background)
-    alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
-end
 
     counter = counter+1;
 end
