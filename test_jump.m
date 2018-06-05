@@ -2,20 +2,18 @@ clear all; close all;
 dbstop if error;
 
 % obtain image
-I = double(imread('Screenshot1.png'));
+I = double(imread('jump.png'));
 figure;imshow(uint8(I));title('origin image');
 
 % define foreground
-[x,y] = meshgrid(142:150,133:433);
+[x,y] = meshgrid(122:376,782:800);
 foreground = [x(:).';y(:).'];
-[x,y] = meshgrid(232:240,71:465);
+[x,y] = meshgrid(330:646,332:346);
 foreground = [foreground,[x(:).';y(:).']];
 
 % defind background
-[x,y] = meshgrid(30:38,133:433);
+[x,y] = meshgrid(84:96,110:490);
 background = [x(:).';y(:).'];
-[x,y] = meshgrid(364:372,133:433);
-background = [background,[x(:).';y(:).']];
 
 Iplot = I;
 for i1 = 1:length(foreground)
@@ -24,8 +22,8 @@ end
 for i1 = 1:length(background)
     Iplot(background(1,i1),background(2,i1),:)=[0,0,255];
 end
-% figure;imshow(uint8(Iplot));title('fore & back ground');
+figure;imshow(uint8(Iplot));title('fore & back ground');
 
-tic;
-mattedImage = BP_matte(I,foreground, background);
-toc;
+% tic;
+% mattedImage = BP_matte(I,foreground, background);
+% toc;
