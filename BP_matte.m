@@ -51,7 +51,7 @@ end
 counter = 1;
 
 %% build GMM based on user-defined foreground & background and assign pixels to single Gaussain
-K = 5;                                      % the number of component is 5 as infered in paper "GrabCut"
+K = 2;                                      % the number of component is 5 as infered in paper "GrabCut"
 options = statset('MaxIter',500);
 gmm_fore = fitgmdist(foreground.', K,'Options',options);        % build Gaussian mix model for foreground
 gmm_back = fitgmdist(background.', K,'Options',options);        % build Gaussian mix model for background
@@ -67,7 +67,7 @@ r2 = 20;                                    % radius of region considered when c
 while max(Un(:))~=0 & U>U_new % while Un is not null
     U = sum(uncert(:));                              % update the total uncertainty.
     %% if Un is not null, transfer pixelswithin 15 pixels of Uc from Un to Uc_tilde
-    if max(Un)~=0
+    if max(Un(:))~=0
         X_c = X(uncert==0);                 % obtain pixels in Uc
     	Y_c = Y(uncert==0);
         for i1 = 1:length(X_c)
