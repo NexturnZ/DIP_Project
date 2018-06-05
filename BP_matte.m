@@ -253,10 +253,10 @@ while max(Un)~=0 & U>U_new % while Un is not null
     
     for i1 = 1:s(1)
        for i2 = 1:s(2)
-           if(Uc_tilde==1 & (alpha ~= 1 & alpha ~= 0))
+           if(Uc_tilde(i1,i2)==1)
               
-              [~,minF] = min(sum((squeeze(F_opt(i1,i2,:))-foreValue).^2,3));                       % obtain the index of the smallest fitting error sample
-              [~,minB] = min(sum((squeeze(B_opt(i1,i2,:))-backValue).^2,3));                       % obtain the index of the smallest fitting error sample
+              [~,minF] = min(sum((squeeze(F_opt(i1,i2,:))-foreValue).^2),[],2);                       % obtain the index of the smallest fitting error sample
+              [~,minB] = min(sum((squeeze(B_opt(i1,i2,:))-backValue).^2),[],2);                       % obtain the index of the smallest fitting error sample
               
               wF_star = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert, r2);
               wB_star = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert, r2);
