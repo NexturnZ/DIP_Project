@@ -265,15 +265,21 @@ while max(Un)~=0 & U>U_new % while Un is not null
        end
     end
     
-    foreground = foreground_new;
-    background = background_new;
-    
-    Uc_tilde =zeros(s); Uc_tilde(uncert~=0 & uncert~=1)=1;              % re-define Uc_tilde
+%     Uc_tilde =zeros(s); Uc_tilde(uncert~=0 & uncert~=1)=1;              % re-define Uc_tilde
     Un = zeros(s);  Un(uncert==1)=1;
     U_new = sum(uncert(:));                                              % compute total uncertainty
     
     estimated(MRF==1)=1;                                                % record pixels which have been estimated
 %     fprintf('the %d iteration',counter);
+
+for i1 = 1:length(foreground)
+    alpha(foreground(1,i1),foreground(2,i1)) = 1;                           % set value of user-defined foreground to be 1
+end
+
+for i1 = 1:length(background)
+    alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
+end
+
     counter = counter+1;
 end
 
