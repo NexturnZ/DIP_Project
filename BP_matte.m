@@ -259,7 +259,7 @@ while max(Un)~=0 & U>U_new % while Un is not null
               [~,minB] = min(sum((squeeze(B_opt(i1,i2,:))-backValue).^2),[],2);                       % obtain the index of the smallest fitting error sample
               
               wF_star = weight([i1,i2],foreground_new(1,minF),foreground_new(2,minF),uncert, r2);
-              wB_star = weight([i1,i2],foreground_new(1,minB),foreground_new(2,minB),uncert, r2);
+              wB_star = weight([i1,i2],background_new(1,minB),background_new(2,minB),uncert, r2);
               uncert(i1,i2)= 1-sqrt(wF_star.*wB_star);
            end
        end
