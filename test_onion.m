@@ -24,5 +24,5 @@ end
 figure;imshow(uint8(Iplot));title('fore & back ground');
 
 tic;
-mattedImage = BP_matte(I,foreground, background);
+mattedImage = BP_matte(I,foreground, background,2);
 toc;

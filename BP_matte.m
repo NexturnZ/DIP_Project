@@ -5,11 +5,11 @@
 %   where the first row is X coordinate, the seconde row is Y coordinate;
 % background: user defined background --> 2xm matrix,
 %   where the first row is X coordinate, the seconde row is Y coordinate;
-%                     
+% K: number of component in GMM the number of component is 5 as infered in paper "GrabCut"               
 % Output:
 % MattedImage: Processd image         --> MxN matrix;
 %-------------------------------------------------------------------------%
-function MattedImage = BP_matte(Image, foreground, background)
+function MattedImage = BP_matte(Image, foreground, background,K)
 %% initially define Uc & Un based on user-defined foreground & background
 s = size(Image);
 s = s([1,2]);
@@ -51,7 +51,6 @@ end
 counter = 1;
 
 %% build GMM based on user-defined foreground & background and assign pixels to single Gaussain
-K = 2;                                      % the number of component is 5 as infered in paper "GrabCut"
 options = statset('MaxIter',500);
 gmm_fore = fitgmdist(foreground.', K,'Options',options);        % build Gaussian mix model for foreground
 gmm_back = fitgmdist(background.', K,'Options',options);        % build Gaussian mix model for background

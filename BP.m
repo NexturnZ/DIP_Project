@@ -1,5 +1,5 @@
 function alphaK_new = BP(MRF, Vd, Vs,alphaK, level)
-iteration = 40;         % iteration times
+iteration = 100;         % iteration times
 s = size(MRF);          % obtain the size of image
 
 % initialize message 
@@ -23,7 +23,7 @@ b = zeros([s,level]);
 
 while sum(m_new(:) == m(:))~=numel(m) & counter < iteration
     m = m_new;
-    
+%     m_new = zeros([s,4,level]);
     for i1 = 1:level
         Vs_rep = ones(1,1,level);
         Vs_corner(1,1,:)= Vs(i1,:);
@@ -155,8 +155,8 @@ m_sum = zeros(1,1,level);
 m_sum(1,1,:) = squeeze(m(1,2,4,:)+m(2,1,1,:));
 b(1,1,:) = Vd(1,1,:).*m_sum;
 
-m_sum(1,1,:) = squeeze(m(2,s(1),1,:)+m(1,s(1)-1,2,:));
-b(1,s(1),:) = Vd(1,s(1),:).*m_sum;
+m_sum(1,1,:) = squeeze(m(2,s(2),1,:)+m(1,s(2)-1,2,:));
+b(1,s(2),:) = Vd(1,s(2),:).*m_sum;
 
 m_sum(1,1,:) = squeeze(m(s(1)-1,s(2),3,:)+m(s(1),s(2)-1,2,:));
 b(s(1),s(2),:) = Vd(s(1),s(2),:).*m_sum;
