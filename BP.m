@@ -1,5 +1,5 @@
 function alphaK_new = BP(MRF, Vd, Vs,alphaK, level)
-iteration = 100;         % iteration times
+iteration = 75;         % iteration times
 s = size(MRF);          % obtain the size of image
 
 % initialize message 

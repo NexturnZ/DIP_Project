@@ -187,26 +187,26 @@ while max(Un(:))~=0 & U>U_new % while Un is not null
         
         Fp = zeros(1,length(foreSample),3); % 
         for i2 = 1:length(foreSample)
-            Fp(1,i2,:) = Image(foreSample(1,i2),foreSample(2,i2)); % obtain foreground samples' RGB value
+            Fp(1,i2,:) = Image(foreSample(1,i2),foreSample(2,i2),:); % obtain foreground samples' RGB value
         end
         Fp_rep = repmat(Fp,N,1);
         
         Bp = zeros(length(backSample),1,3);
         for i2 = 1:length(backSample)
-            Bp(i2,1,:) = Image(backSample(1,i2),backSample(2,i2)); % obtain background samples' RGB value
+            Bp(i2,1,:) = Image(backSample(1,i2),backSample(2,i2),:); % obtain background samples' RGB value
         end
         Bp_rep = repmat(Bp,1,N);
         
         dF = squeeze(sqrt(sum(Fp.^2,3)));                  % variance of foreground sample set
-        sigmaF = mean((dF-mean(dF)).^2);
+        sigmaF = sqrt(mean((dF-mean(dF)).^2));
         dB = squeeze(sqrt(sum(Bp.^2,3)));                  % variance of background sample set
-        sigmaB = mean((dB-mean(dB)).^2);
+        sigmaB = sqrt(mean((dB-mean(dB)).^2));
         
         for i2 = 1:level
-            sigma = alphaK(i2)*sigmaF+(1-alphaK(i2))*sigmaB;
+            sigma_kd = alphaK(i2)*sigmaF+(1-alphaK(i2))*sigmaB;
             dc = sum((Cp-(alphaK(i2)*Fp_rep+(1-alphaK(i2))*Bp_rep)).^2,3);
             
-            Lkp = wF(IdxF).*wB(IdxB).*exp(-dc/(2*sigma^2));
+            Lkp = wF(IdxF).*wB(IdxB).*exp(-dc/(2*sigma_kd^2));
             Lk(i2) = 1/N^2*sum(Lkp(:));                     % calculate likelihood
         end
         
@@ -233,6 +233,7 @@ while max(Un(:))~=0 & U>U_new % while Un is not null
         alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
     end
     
+    figure; imshow(uint8(255*alpha));
     %% update uncertianty, foreground & background
     uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
     Uc_tilde(alpha==1 |alpha==0) = 0;
