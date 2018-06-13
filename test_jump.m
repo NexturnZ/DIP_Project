@@ -6,9 +6,9 @@ I = double(imread('jump2.png'));
 figure;imshow(uint8(I));title('origin image');
 
 % define foreground
-[x,y] = meshgrid(84:120,90:94);
+[x,y] = meshgrid(82:124,86:94);
 foreground = [x(:).';y(:).'];
-[x,y] = meshgrid(52:56,87:93);
+[x,y] = meshgrid(50:58,85:95);
 foreground = [foreground,[x(:).';y(:).']];
 
 % defind background

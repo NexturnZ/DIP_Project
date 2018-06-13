@@ -1,5 +1,5 @@
 function alphaK_new = BP(MRF, Vd, Vs,alphaK, level)
-iteration = 75;         % iteration times
+iteration = 40;         % iteration times
 s = size(MRF);          % obtain the size of image
 
 % initialize message 
@@ -139,7 +139,8 @@ while sum(m_new(:) == m(:))~=numel(m) & counter < iteration
         m_new(X_n(i1),Y_n(i1),:,:)= ones(1,1,4,level);
     end
     
-    fprintf('The %d iteration\n',counter);
+%     fprintf('The %d iteration\n',counter);
+%     fprintf('%d\n',sum(m_new(:) == m(:)));
     counter = counter+1;
     
 end

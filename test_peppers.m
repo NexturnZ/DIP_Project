@@ -8,8 +8,11 @@ figure;imshow(uint8(I));title('origin image');
 % define foreground
 [x,y] = meshgrid(142:150,133:433);
 foreground = [x(:).';y(:).'];
-[x,y] = meshgrid(232:240,71:465);
+[x,y] = meshgrid(200:210,71:465);
 foreground = [foreground,[x(:).';y(:).']];
+[x,y] = meshgrid(270:278,71:480);
+foreground = [foreground,[x(:).';y(:).']];
+
 
 % defind background
 [x,y] = meshgrid(30:38,133:433);
@@ -26,7 +29,7 @@ for i1 = 1:length(background)
 end
 figure;imshow(uint8(Iplot));title('fore & back ground');
 
-% tic;
-% mattedImage = BP_matte(I,foreground, background,5);
-% toc;
+tic;
+mattedImage = BP_matte(I,foreground, background,5);
+toc;
 

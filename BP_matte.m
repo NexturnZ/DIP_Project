@@ -119,10 +119,15 @@ while max(Un(:))~=0 & U>U_new % while Un is not null
         
         
         % foreground
+%         foreSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+%             & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+%         foreSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+%             & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+        
         foreSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
-            & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+            & alpha==1 & estimated==1);
         foreSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
-            & alpha>alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+            & alpha==1 & estimated==1);
         
         % check whether there are N samples
         if length(foreSampleX_temp)>=N
@@ -148,10 +153,15 @@ while max(Un(:))~=0 & U>U_new % while Un is not null
         end
         
         % background
+%         backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+%             & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+%         backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
+%             & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+        
         backSampleX_temp = X((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
-            & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+            & alpha==0 & estimated==1);
         backSampleY_temp = Y((X-X_mrf(i1)).^2+(Y-Y_mrf(i1)).^2<=r2^2 ...
-            & alpha<alpha(X_mrf(i1),Y_mrf(i1)) & estimated==1);
+            & alpha==0 & estimated==1);
         
         % check whether there are N samples
         if length(backSampleX_temp)>=N
@@ -233,7 +243,7 @@ while max(Un(:))~=0 & U>U_new % while Un is not null
         alpha(background(1,i1),background(2,i1)) = 0;                           % set value of user-defined foreground to be 1
     end
     
-    figure; imshow(uint8(255*alpha));
+%     figure; imshow(uint8(255*alpha));
     %% update uncertianty, foreground & background
     uncert((alpha==1 |alpha==0) & Uc_tilde==1)=0;                      % assigning new foreground & background uncertainty to 0;
     Uc_tilde(alpha==1 |alpha==0) = 0;
